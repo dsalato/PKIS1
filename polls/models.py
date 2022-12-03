@@ -1,7 +1,24 @@
 import datetime
 
+from django.contrib.auth.models import AbstractUser
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
+
+
+class User(AbstractUser):
+    first_name = models.CharField(max_length=254, verbose_name='Имя', blank=False)
+    last_name = models.CharField(max_length=254, verbose_name='Фамилия', blank=False)
+    username = models.CharField(max_length=254, verbose_name='Логин', unique=True, blank=False)
+    email = models.CharField(max_length=254, verbose_name='Почта', unique=True, blank=False)
+    password = models.CharField(max_length=254, verbose_name='Пароль', blank=False)
+    photo = models.ImageField(max_length=254, verbose_name='Фотография', blank=True, null=True,
+                              validators=[FileExtensionValidator(allowed_extensions=['png', 'jpg', 'jpeg', 'bmp'])])
+
+    USERNAME_FIELD = 'username'
+
+    def __str__(self):
+        return self.first_name
 
 
 class Question(models.Model):
