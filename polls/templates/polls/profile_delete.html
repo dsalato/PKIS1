@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Удаление профиля{% endblock %}
+{% block content %}
+
+  <p>Удаление профиля</p>
+
+  <p>Вы уверены, что хотите удалить профиль: {{ user.username }}?</p>
+
+  <form action="" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Да, удалить." />
+  </form>
+
+{% endblock %}

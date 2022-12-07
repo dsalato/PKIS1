@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Мой профиль{% endblock %}
+{% block content %}
+<p> Профиль  {{ user.username }}</p>
+{% if not request.user.is_superuser %}
+    <p><img width="250px" height="200px" src="{{user.photo.url}}"></p>
+{% endif %}
+<p>Мое имя: {{ user.first_name }}</p>
+<p>Моя фамилия: {{ user.last_name }}</p>
+<p>Моя почта: {{ user.email }}</p>
+<a href="{% url 'polls:profile_update' user.pk %}">Редактировать</a> | <a href="{% url 'polls:profile_delete' user.pk %}">Удалить</a>
+{% endblock%}
