@@ -1,10 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+<p>Вход</p>
+{% if form.errors %}
+    <div class="">
+        <p class="login_p" class="">Неправильный логин или пароль</p>
+    </div>
+{% endif %}
+{% if user.is_authenticated %}
+     <p class="login_p" class="category_pp">Вы уже авторизованы.</p>
+{% else %}
+<form method="post">
+       {% csrf_token %}
+       <table class="table">
+                <tr class="table_tr">
+                    <td class="table_td">{{ form.username.label_tag }}</td>
+                    <td class="table_td">{{ form.username }}</td>
+                </tr>
+                <tr class="table_tr">
+                    <td class="table_td">{{ form.password.label_tag }}</td>
+                    <td class="table_td">{{ form.password }}</td>
+                </tr>
+            </table>
+            <input class="category_aa" type="submit" value="Войти">
+</form>
+{% endif %}
+{% endblock%}

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %}Информация{% endblock %}
 {% block content %}
 <form action="{% url 'polls:vote' question.id %}" method="post">
     {% csrf_token %}
@@ -6,12 +7,14 @@
         <legend>
             <h1>{{question.question_text}}</h1>
         </legend>
+        <p>{{question.description}}</p>
+        <p><img width="250px" height="240px" src="{{question.photo.url}}"></p>
         {% if error_message %}<p><strong> {{error_message}}</strong></p>{% endif %}
         {% for choice in question.choice_set.all %}
         <input type="radio" name="choice" id="choice{{forloop.counter}}" value="{{choice.id}}">
         <label for="choice{{forloop.counter}}">{{choice.choice_text}}</label><br>
         {% endfor %}
     </fieldset>
-<input type="submit" value="Vote">
+<input type="submit" value="нажать"><a href="{% url 'polls:results' question.id %}"> Результаты опроса</a>
 </form>
 {% endblock%}

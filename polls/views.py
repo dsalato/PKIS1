@@ -1,10 +1,10 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import CreateView
+from django.http import HttpResponseRedirect
+from django.views.generic import CreateView, DeleteView, UpdateView
 
-from .forms import RegisterUserForm
-from .models import Question, Choice
-from django.template import loader
+from .forms import RegisterUserForm, ProfileUpdate
+from .models import *
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
@@ -12,7 +12,7 @@ from django.views import generic
 class RegisterView(CreateView):
     template_name = 'registration/registration.html'
     form_class = RegisterUserForm
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('polls:index')
 
 
 class IndexView(generic.ListView):
@@ -21,6 +21,24 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         return Question.objects.order_by('-pub_date')
+
+
+class Profile(LoginRequiredMixin, generic.ListView):
+    model = User
+    template_name = 'polls/profile.html'
+
+
+class ProfileUpdate(UpdateView):
+    model = User
+    form_class = ProfileUpdate
+    template_name = 'polls/profile_update.html'
+    success_url = reverse_lazy('polls:profile')
+
+
+class ProfileDelete(DeleteView):
+    model = User
+    template_name = 'polls/profile_delete.html'
+    success_url = reverse_lazy('polls:login')
 
 
 class DetailView(generic.DetailView):
@@ -43,6 +61,15 @@ def vote(request, question_id):
             'error_message': 'вы не сделали выбор'
         })
     else:
-        selected_choice.votes += 1
-        selected_choice.save()
-        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+        if Question.objects.filter(id=question_id, user_vote=request.user):
+            return render(request, 'polls/detail.html', {
+                'question': question,
+                'error_message': 'Вы уже сделали выбор'
+            })
+        else:
+            question.user_vote.add(request.user)
+            question.vote += 1
+            question.save()
+            selected_choice.votes += 1
+            selected_choice.save()
+            return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))

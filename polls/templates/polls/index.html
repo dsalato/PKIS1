@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+
 {% if latest_question_list %}
 <ul>
     {% for question in latest_question_list %}
-    <li><a href="{% url 'polls:detail' question.id %}">{{question.question_text}}</a> </li>
+        {% if question.was_published_recently or request.user.is_superuser %}
+            <li><a href="{% url 'polls:detail' question.id %}">{{question.question_text}}</a> -- {{question.description_small}} </li>
+        {% endif %}
     {% endfor %}
 </ul>
     {% else %}

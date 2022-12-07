@@ -13,9 +13,14 @@
     <div>
       <div>Вопрос</div>
       <nav>
-        <a href="#">Вход</a>
-        <a href="{% url 'polls:registration' %}">Регистрация</a>
-        <a href="#">Выход</a>
+        <a href="{% url 'polls:index' %}">Главная</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'polls:profile' %}">Профиль</a>
+          <a href="{% url 'polls:logout' %}">Выход</a>
+        {% else %}
+          <a href="{% url 'polls:login' %}">Вход</a>
+          <a href="{% url 'polls:registration' %}">Регистрация</a>
+        {% endif %}
       </nav>
     </div>
   </div>

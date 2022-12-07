@@ -1,10 +1,15 @@
 from django import forms
 from django.core.exceptions import ValidationError
-
 from polls.models import User
 
 
 class RegisterUserForm(forms.ModelForm):
+
+    password = forms.CharField(label='Пароль',
+                               widget=forms.PasswordInput)
+
+    password2 = forms.CharField(label='Пароль повторно',
+                                widget=forms.PasswordInput)
 
     def clean(self):
         super().clean()
@@ -24,6 +29,15 @@ class RegisterUserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username', 'email', 'password', 'photo']
+        fields = ['first_name', 'last_name', 'username', 'email', 'password', 'password2', 'photo']
 
 
+class ProfileUpdate(forms.ModelForm):
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    email = forms.CharField(required=False)
+    photo = forms.ImageField(required=False)
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email',  'photo']
