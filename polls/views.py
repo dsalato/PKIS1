@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.views.generic import CreateView, DeleteView, UpdateView
 
 from .forms import RegisterUserForm, ProfileUpdate
@@ -34,16 +34,37 @@ class ProfileUpdate(UpdateView):
     template_name = 'polls/profile_update.html'
     success_url = reverse_lazy('polls:profile')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context_user = User.objects.get(pk=self.kwargs['pk'])
+        if context_user.pk != self.request.user.pk:
+            raise PermissionError('У вас нет доступа к этому профилю!!!')
+        return context
+
 
 class ProfileDelete(DeleteView):
     model = User
     template_name = 'polls/profile_delete.html'
     success_url = reverse_lazy('polls:login')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context_user = User.objects.get(pk=self.kwargs['pk'])
+        if context_user.pk != self.request.user.pk:
+            raise PermissionError('У вас нет доступа к этому профилю!!!')
+        return context
+
 
 class DetailView(generic.DetailView):
     model = Question
     template_name = 'polls/detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context_question = Question.objects.get(pk=self.kwargs['pk'])
+        if not context_question.was_published_recently() and not self.request.user.is_superuser:
+            raise PermissionError('Время действия этого вопроса закончено!!!')
+        return context
 
 
 class ResultsView(generic.DetailView):

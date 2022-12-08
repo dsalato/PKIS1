@@ -3,11 +3,13 @@
 
 {% if latest_question_list %}
 <ul>
+    {% if user.is_authenticated %}
     {% for question in latest_question_list %}
         {% if question.was_published_recently or request.user.is_superuser %}
             <li><a href="{% url 'polls:detail' question.id %}">{{question.question_text}}</a> -- {{question.description_small}} </li>
         {% endif %}
     {% endfor %}
+    {% endif %}
 </ul>
     {% else %}
      <p>
